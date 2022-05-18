@@ -67,7 +67,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// storeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	storeCmd.Flags().StringVarP(&StoreName, "store-name", "s", "", "name of the key value store")
+	storeCmd.Flags().StringVarP(&StoreName, "store-name", "n", "", "name of the key value store")
 	storeCmd.Flags().StringVarP(&Key, "key", "k", "", "name of the key")
 	storeCmd.Flags().StringVarP(&Value, "value", "v", "", "either text or the name of a file")
 	storeCmd.Flags().StringVarP(&Type, "type", "t", "string", "the type of value, defaults to string")
