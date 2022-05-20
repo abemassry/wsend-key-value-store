@@ -5,10 +5,17 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"bytes"
 	"fmt"
+	"mime/multipart"
+	"net/http"
+	"os"
 
 	"github.com/spf13/cobra"
 )
+
+// UID is the access token
+var UID string
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
@@ -16,6 +23,11 @@ var createCmd = &cobra.Command{
 	Short: "create a new key value store",
 	Long: `Initialize a key value store with a name
 wkv create --name="foo"
+optional pass in a uid
+wkv create --name="foo" --uid="0123456789abcdef"
+
+if uid is not passed in wkv will search for the uid in the wsend install path
+incase wsend is installed
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -23,17 +35,40 @@ wkv create --name="foo"
 		fmt.Println("store-name:")
 		fmt.Println(StoreName)
 		contents := []byte("{}")
-		extraParams := map[string]string{
-			"uid": "uid",
+
+		if UID == "" {
+			homeDir, err := os.UserHomeDir()
+			if err != nil {
+				fmt.Println(fmt.Errorf("error reading homedir ~"))
+				fmt.Println(fmt.Errorf(err.Error()))
+				os.Exit(1)
+			}
+			wsendDir := homeDir + "/.wsend"
+			uidPath := wsendDir + "/.id"
+			id, err := os.ReadFile(uidPath)
+			if err != nil {
+				fmt.Println(fmt.Errorf("error reading id file"))
+				fmt.Println(fmt.Errorf(err.Error()))
+				os.Exit(1)
+			}
+			UID = string(id)
 		}
-		request, err := newfileUploadRequest("https://wsend.net/upload_cli", extraParams, StoreName, contents)
+		if UID == "" {
+			fmt.Println(fmt.Errorf("Could not find uid"))
+			os.Exit(1)
+		}
+
+		extraParams := map[string]string{
+			"uid": UID,
+		}
+		request, err := UploadNoFile("https://wsend.net/upload_cli", extraParams, StoreName, contents)
 		if err != nil {
-			fmt.Fatal(err)
+			fmt.Println(fmt.Errorf(err.Error()))
 		}
 		client := &http.Client{}
 		resp, err := client.Do(request)
 		if err != nil {
-			fmt.Fatal(err)
+			fmt.Println(fmt.Errorf(err.Error()))
 		} else {
 			var bodyContent []byte
 			fmt.Println(resp.StatusCode)
@@ -59,6 +94,8 @@ func init() {
 	// is called directly, e.g.:
 	// createCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	createCmd.Flags().StringVarP(&StoreName, "name", "n", "", "name of the key value store")
+	createCmd.Flags().StringVarP(&UID, "uid", "u", "", "access token")
+
 }
 
 // UploadNoFile uploads a file without the file existing on the filesystem
