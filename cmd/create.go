@@ -61,10 +61,11 @@ incase wsend is installed
 		extraParams := map[string]string{
 			"uid": UID,
 		}
-		request, err := UploadNoFile("https://wsend.net/upload_cli", extraParams, StoreName, contents)
+		formDataContentType, request, err := UploadNoFile("https://wsend.net/upload_cli", extraParams, StoreName, contents)
 		if err != nil {
 			fmt.Println(fmt.Errorf(err.Error()))
 		}
+		request.Header.Add("Content-Type", formDataContentType)
 		client := &http.Client{}
 		resp, err := client.Do(request)
 		if err != nil {
@@ -99,23 +100,30 @@ func init() {
 }
 
 // UploadNoFile uploads a file without the file existing on the filesystem
-func UploadNoFile(uri string, params map[string]string, name string, contents []byte) (*http.Request, error) {
+func UploadNoFile(uri string, params map[string]string, name string, contents []byte) (string, *http.Request, error) {
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile("filehandle", name)
-	if err != nil {
-		return nil, err
-	}
-	part.Write(contents)
-
 	for key, val := range params {
 		_ = writer.WriteField(key, val)
 	}
+
+	part, err := writer.CreateFormFile("filehandle", name)
+	if err != nil {
+		return "", nil, err
+	}
+	part.Write(contents)
+
+	formDataContentType := writer.FormDataContentType()
+
 	err = writer.Close()
 	if err != nil {
-		return nil, err
+		return "", nil, err
+	}
+	req, err := http.NewRequest("POST", uri, body)
+	if err != nil {
+		return "", nil, err
 	}
 
-	return http.NewRequest("POST", uri, body)
+	return formDataContentType, req, nil
 }
