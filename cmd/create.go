@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -57,6 +58,8 @@ incase wsend is installed
 			fmt.Println(fmt.Errorf("Could not find uid"))
 			os.Exit(1)
 		}
+		UID = strings.TrimSpace(UID)
+		fmt.Println(UID)
 
 		extraParams := map[string]string{
 			"uid": UID,
