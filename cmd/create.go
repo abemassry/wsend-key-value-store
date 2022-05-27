@@ -17,6 +17,7 @@ import (
 
 // UID is the access token
 var UID string
+var StoreName string
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
@@ -38,21 +39,7 @@ incase wsend is installed
 		contents := []byte("{}")
 
 		if UID == "" {
-			homeDir, err := os.UserHomeDir()
-			if err != nil {
-				fmt.Println(fmt.Errorf("error reading homedir ~"))
-				fmt.Println(fmt.Errorf(err.Error()))
-				os.Exit(1)
-			}
-			wsendDir := homeDir + "/.wsend"
-			uidPath := wsendDir + "/.id"
-			id, err := os.ReadFile(uidPath)
-			if err != nil {
-				fmt.Println(fmt.Errorf("error reading id file"))
-				fmt.Println(fmt.Errorf(err.Error()))
-				os.Exit(1)
-			}
-			UID = string(id)
+			UID = getUID()
 		}
 		if UID == "" {
 			fmt.Println(fmt.Errorf("Could not find uid"))
@@ -100,6 +87,24 @@ func init() {
 	createCmd.Flags().StringVarP(&StoreName, "name", "n", "", "name of the key value store")
 	createCmd.Flags().StringVarP(&UID, "uid", "u", "", "access token")
 
+}
+
+func getUID() string {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println(fmt.Errorf("error reading homedir ~"))
+		fmt.Println(fmt.Errorf(err.Error()))
+		os.Exit(1)
+	}
+	wsendDir := homeDir + "/.wsend"
+	uidPath := wsendDir + "/.id"
+	id, err := os.ReadFile(uidPath)
+	if err != nil {
+		fmt.Println(fmt.Errorf("error reading id file"))
+		fmt.Println(fmt.Errorf(err.Error()))
+		os.Exit(1)
+	}
+	return string(id)
 }
 
 // UploadNoFile uploads a file without the file existing on the filesystem

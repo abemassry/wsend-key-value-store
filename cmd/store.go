@@ -5,13 +5,18 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
 
-// StoreName is the name of the key value store
-var StoreName string
+// StoreLink is the link of the key value store
+var StoreLink string
 
 // Key is the key in the key value store
 var Key string
@@ -31,8 +36,8 @@ var storeCmd = &cobra.Command{
 A key is a string and value can be anything but defaults to a string and is
 stored as a URL
 
-wkv store --store-name="foo" --key="bar" --value="baz" --type="string"
-    --store-name name of the key value store container
+wkv store --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar" --value="baz" --type="string"
+    --store-link name of the key value store container
     --key name of the key inside key value store
     --value either a string (default) or a file based on the --type
       in either case a file is uploaded which allows the string data to be
@@ -40,18 +45,71 @@ wkv store --store-name="foo" --key="bar" --value="baz" --type="string"
     --type string or file
 value is either a string (default) or a file specified by --type="file"
 if a file is specified the path is either absolute or the default is the
-current directory`,
+current directory
+    --uid is optionally passed in like in create`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("store called")
-		fmt.Println("")
-		fmt.Println("key:")
-		fmt.Println(Key)
-		fmt.Println("")
-		fmt.Println("value:")
-		fmt.Println(Value)
-		fmt.Println("")
-		fmt.Println("store-name:")
-		fmt.Println(StoreName)
+
+		splited := strings.Split(StoreLink, "/")
+		storeName := splited[4]
+		resp, err := http.Get(StoreLink)
+		if err != nil {
+			fmt.Println(fmt.Errorf(err.Error()))
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			fmt.Println(fmt.Errorf("could not pull data from imdb, status code is %d", resp.StatusCode))
+		}
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+		dataStore := buf.String()
+		var keyValStore map[string]string
+		err = json.Unmarshal([]byte(dataStore), &keyValStore)
+		if err != nil {
+			fmt.Println(fmt.Errorf("store link invalid json"))
+			fmt.Println(fmt.Errorf(err.Error()))
+			os.Exit(1)
+		}
+		keyValStore[Key] = Value
+
+		if UID == "" {
+			UID = getUID()
+		}
+		if UID == "" {
+			fmt.Println(fmt.Errorf("Could not find uid"))
+			os.Exit(1)
+		}
+		UID = strings.TrimSpace(UID)
+
+		textContents, err := json.Marshal(keyValStore)
+		if err != nil {
+			fmt.Println(fmt.Errorf("error generating json"))
+			fmt.Println(fmt.Errorf(err.Error()))
+			os.Exit(1)
+		}
+
+		contents := []byte(textContents)
+		extraParams := map[string]string{
+			"uid":  UID,
+			"link": StoreLink,
+		}
+		formDataContentType, request, err := UploadNoFile("https://wsend.net/update_cli", extraParams, storeName, contents)
+		if err != nil {
+			fmt.Println(fmt.Errorf(err.Error()))
+		}
+		request.Header.Add("Content-Type", formDataContentType)
+		client := &http.Client{}
+		resp, err = client.Do(request)
+		if err != nil {
+			fmt.Println(fmt.Errorf(err.Error()))
+		} else {
+			var bodyContent []byte
+			fmt.Println(resp.StatusCode)
+			fmt.Println(resp.Header)
+			resp.Body.Read(bodyContent)
+			resp.Body.Close()
+			fmt.Println(bodyContent)
+		}
+
 	},
 }
 
@@ -67,11 +125,12 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// storeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	storeCmd.Flags().StringVarP(&StoreName, "store-name", "n", "", "name of the key value store")
+	storeCmd.Flags().StringVarP(&StoreLink, "store-link", "n", "", "link of the key value store")
 	storeCmd.Flags().StringVarP(&Key, "key", "k", "", "name of the key")
 	storeCmd.Flags().StringVarP(&Value, "value", "v", "", "either text or the name of a file")
 	storeCmd.Flags().StringVarP(&Type, "type", "t", "string", "the type of value, defaults to string")
-	storeCmd.MarkFlagRequired("store-name")
+	storeCmd.Flags().StringVarP(&UID, "uid", "u", "", "access token")
+	storeCmd.MarkFlagRequired("store-link")
 	storeCmd.MarkFlagRequired("key")
 	storeCmd.MarkFlagRequired("value")
 }
