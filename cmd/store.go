@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"io"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -48,16 +49,60 @@ if a file is specified the path is either absolute or the default is the
 current directory
     --uid is optionally passed in like in create`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if UID == "" {
+			UID = getUID()
+		}
+		if UID == "" {
+			fmt.Println(fmt.Errorf("Could not find uid"))
+			os.Exit(1)
+		}
+		UID = strings.TrimSpace(UID)
+		contents := []byte(Value)
+		valueLink := ""
+
+
+		extraParams := map[string]string{
+			"uid": UID,
+		}
+		formDataContentType, request, err := UploadNoFile("https://wsend.net/upload_cli", extraParams, Key, contents)
+		if err != nil {
+			fmt.Println(fmt.Errorf(err.Error()))
+		}
+		request.Header.Add("Content-Type", formDataContentType)
+		client := &http.Client{}
+		resp, err := client.Do(request)
+		if err != nil {
+			fmt.Println(fmt.Errorf(err.Error()))
+			os.Exit(1)
+		} else {
+			fmt.Println(resp.StatusCode)
+			fmt.Println(resp.Header)
+
+			bodyBytes, err := io.ReadAll(resp.Body)
+			if err != nil {
+				fmt.Println(fmt.Errorf(err.Error()))
+			}
+			valueLink = string(bodyBytes)
+
+
+			resp.Body.Close()
+			fmt.Println(valueLink)
+		}
+
+		if valueLink == "" {
+			fmt.Println("problem with upload contents")
+			os.Exit(1)
+		}
 
 		splited := strings.Split(StoreLink, "/")
 		storeName := splited[4]
-		resp, err := http.Get(StoreLink)
+		resp, err = http.Get(StoreLink)
 		if err != nil {
 			fmt.Println(fmt.Errorf(err.Error()))
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != 200 {
-			fmt.Println(fmt.Errorf("could not pull data from imdb, status code is %d", resp.StatusCode))
+			fmt.Println(fmt.Errorf("could not get link, status code is %d", resp.StatusCode))
 		}
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(resp.Body)
@@ -69,16 +114,8 @@ current directory
 			fmt.Println(fmt.Errorf(err.Error()))
 			os.Exit(1)
 		}
-		keyValStore[Key] = Value
+		keyValStore[Key] = valueLink
 
-		if UID == "" {
-			UID = getUID()
-		}
-		if UID == "" {
-			fmt.Println(fmt.Errorf("Could not find uid"))
-			os.Exit(1)
-		}
-		UID = strings.TrimSpace(UID)
 
 		textContents, err := json.Marshal(keyValStore)
 		if err != nil {
@@ -87,17 +124,17 @@ current directory
 			os.Exit(1)
 		}
 
-		contents := []byte(textContents)
-		extraParams := map[string]string{
+		contents = []byte(textContents)
+		extraParams = map[string]string{
 			"uid":  UID,
 			"link": StoreLink,
 		}
-		formDataContentType, request, err := UploadNoFile("https://wsend.net/update_cli", extraParams, storeName, contents)
+		formDataContentType, request, err = UploadNoFile("https://wsend.net/update_cli", extraParams, storeName, contents)
 		if err != nil {
 			fmt.Println(fmt.Errorf(err.Error()))
 		}
 		request.Header.Add("Content-Type", formDataContentType)
-		client := &http.Client{}
+		client = &http.Client{}
 		resp, err = client.Do(request)
 		if err != nil {
 			fmt.Println(fmt.Errorf(err.Error()))
