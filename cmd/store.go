@@ -8,9 +8,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
-	"io"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -60,7 +60,6 @@ current directory
 		contents := []byte(Value)
 		valueLink := ""
 
-
 		extraParams := map[string]string{
 			"uid": UID,
 		}
@@ -83,7 +82,6 @@ current directory
 				fmt.Println(fmt.Errorf(err.Error()))
 			}
 			valueLink = string(bodyBytes)
-
 
 			resp.Body.Close()
 			fmt.Println(valueLink)
@@ -115,7 +113,6 @@ current directory
 			os.Exit(1)
 		}
 		keyValStore[Key] = valueLink
-
 
 		textContents, err := json.Marshal(keyValStore)
 		if err != nil {
