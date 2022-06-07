@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -57,7 +58,17 @@ current directory
 			os.Exit(1)
 		}
 		UID = strings.TrimSpace(UID)
-		contents := []byte(Value)
+		var contents []byte
+		var err error
+		if Type == "" || Type == "string" {
+			contents = []byte(Value)
+		} else if Type == "file" {
+			contents, err = ioutil.ReadFile(Value)
+			if err != nil {
+				fmt.Println(fmt.Errorf(err.Error()))
+				os.Exit(1)
+			}
+		}
 		valueLink := ""
 
 		extraParams := map[string]string{
@@ -66,6 +77,7 @@ current directory
 		formDataContentType, request, err := UploadNoFile("https://wsend.net/upload_cli", extraParams, Key, contents)
 		if err != nil {
 			fmt.Println(fmt.Errorf(err.Error()))
+			os.Exit(1)
 		}
 		request.Header.Add("Content-Type", formDataContentType)
 		client := &http.Client{}
