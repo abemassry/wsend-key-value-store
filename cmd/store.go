@@ -86,17 +86,15 @@ current directory
 			fmt.Println(fmt.Errorf(err.Error()))
 			os.Exit(1)
 		} else {
-			fmt.Println(resp.StatusCode)
-			fmt.Println(resp.Header)
 
 			bodyBytes, err := io.ReadAll(resp.Body)
 			if err != nil {
 				fmt.Println(fmt.Errorf(err.Error()))
+				os.Exit(1)
 			}
 			valueLink = string(bodyBytes)
 
 			resp.Body.Close()
-			fmt.Println(valueLink)
 		}
 
 		if valueLink == "" {
@@ -109,10 +107,12 @@ current directory
 		resp, err = http.Get(StoreLink)
 		if err != nil {
 			fmt.Println(fmt.Errorf(err.Error()))
+			os.Exit(1)
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != 200 {
 			fmt.Println(fmt.Errorf("could not get link, status code is %d", resp.StatusCode))
+			os.Exit(1)
 		}
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(resp.Body)
@@ -141,21 +141,19 @@ current directory
 		formDataContentType, request, err = UploadNoFile("https://wsend.net/update_cli", extraParams, storeName, contents)
 		if err != nil {
 			fmt.Println(fmt.Errorf(err.Error()))
+			os.Exit(1)
 		}
 		request.Header.Add("Content-Type", formDataContentType)
 		client = &http.Client{}
 		resp, err = client.Do(request)
 		if err != nil {
 			fmt.Println(fmt.Errorf(err.Error()))
-		} else {
-			var bodyContent []byte
-			fmt.Println(resp.StatusCode)
-			fmt.Println(resp.Header)
-			resp.Body.Read(bodyContent)
-			resp.Body.Close()
-			fmt.Println(bodyContent)
+			os.Exit(1)
 		}
-
+		var bodyContent []byte
+		resp.Body.Read(bodyContent)
+		resp.Body.Close()
+		os.Exit(0)
 	},
 }
 

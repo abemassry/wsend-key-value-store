@@ -33,9 +33,6 @@ incase wsend is installed
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		fmt.Println("create called")
-		fmt.Println("store-name:")
-		fmt.Println(StoreName)
 		contents := []byte("{}")
 
 		if UID == "" {
@@ -46,7 +43,6 @@ incase wsend is installed
 			os.Exit(1)
 		}
 		UID = strings.TrimSpace(UID)
-		fmt.Println(UID)
 
 		extraParams := map[string]string{
 			"uid": UID,
@@ -54,20 +50,20 @@ incase wsend is installed
 		formDataContentType, request, err := UploadNoFile("https://wsend.net/upload_cli", extraParams, StoreName, contents)
 		if err != nil {
 			fmt.Println(fmt.Errorf(err.Error()))
+			os.Exit(1)
 		}
 		request.Header.Add("Content-Type", formDataContentType)
 		client := &http.Client{}
 		resp, err := client.Do(request)
 		if err != nil {
 			fmt.Println(fmt.Errorf(err.Error()))
-		} else {
-			var bodyContent []byte
-			fmt.Println(resp.StatusCode)
-			fmt.Println(resp.Header)
-			resp.Body.Read(bodyContent)
-			resp.Body.Close()
-			fmt.Println(bodyContent)
+			os.Exit(1)
 		}
+		var bodyContent []byte
+		resp.Body.Read(bodyContent)
+		resp.Body.Close()
+
+		os.Exit(0)
 
 	},
 }
