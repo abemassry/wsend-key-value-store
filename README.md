@@ -11,11 +11,13 @@ To build:
 For prebuilt binaries:
 Release
 
-For command line usage drop `wkv` into `~/bin` and have `~/bin` in your `$PATH`
+For command line shell usage drop `wkv` into `~/bin` and have `~/bin` in your `$PATH`
+
+For a system wide install `cp wkv /usr/local/bin` would be a suitable location
 
 ## Requirements
 Not a hard requirment but having [wsend](https://github.com/abemassry/wsend)
-installed helps with grabbing the uid
+installed helps with grabbing the `uid`
 
 ## Usage
 
@@ -82,7 +84,8 @@ Flags:
 
 ### Store Usage
 ```
-tore a value based on a key.
+∮ ./wkv store --help
+Store a value based on a key.
 
 A key is a string and value can be anything but defaults to a string and is
 stored as a URL
@@ -139,39 +142,23 @@ Flags:
 
 ### Remove Usage
 ```
-∮ ./wkv --help
-wsend key value store is command line tool to store
-a value based on a key some examples include:
+∮ ./wkv remove --help
+Delete a key and value
 
-wkv create --name="foo"
-        To create a store
+Deletes a key and the value, as well as the backing file of the value.
 
-wkv store --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar" --value="baz" --type="string"
-        this will store the value "bar" at the key "foo" and it's of type string
-        which is the default if type was "file" then it would attempt to upload the
-        file specified. In either case a file always gets uploaded because the string
-        value can be very large and it makes more sense to be flexible.
+wkv remove --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar" --uid="0123456789abcdef"
 
-wkv get --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar"
-        will print the contents of the value to stdout
-
-wkv remove --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar"
-        to remove the key and associated value and file.
+        --store-link name of the key value store container
+        --key name of the key inside key value store
+        --uid is optionally passed in like in create
 
 Usage:
-  wkv [command]
-
-Available Commands:
-  completion  Generate the autocompletion script for the specified shell
-  create      create a new key value store
-  get         wsend-key-value store get a value based on a key
-  help        Help about any command
-  remove      delete a key and value
-  store       store a value based on a key
+  wkv remove [flags]
 
 Flags:
-  -h, --help     help for wkv
-  -t, --toggle   Help message for toggle
-
-Use "wkv [command] --help" for more information about a command.
+  -h, --help                help for remove
+  -k, --key string          name of the key
+  -n, --store-link string   link of the key value store
+  -u, --uid string          access token
 ```
