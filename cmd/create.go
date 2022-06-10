@@ -25,7 +25,9 @@ var createCmd = &cobra.Command{
 	Short: "create a new key value store",
 	Long: `Initialize a key value store with a name
 wkv create --name="foo"
+
 optional pass in a uid
+
 wkv create --name="foo" --uid="0123456789abcdef"
 
 if uid is not passed in wkv will search for the uid in the wsend install path

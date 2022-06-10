@@ -27,13 +27,13 @@ var getCmd = &cobra.Command{
 This command gets a value given a key and a store
 
 wkv get --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar"
-    --store-link name of the key value store container
-    --key name of the key inside key value store
-    --action optional
-      "print" prints the text content if this is a link, it prints the link
-      "download" downloads the file to the current directory
-      "dump" the default, dumps the contents of the linked file if the link is
-      a file`,
+	--store-link name of the key value store container
+	--key name of the key inside key value store
+	--action optional
+		"print" prints the text content if this is a link, it prints the link
+		"download" downloads the file to the current directory
+		"dump" the default, dumps the contents of the linked file if the link is
+		a file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		resp, err := http.Get(StoreLink)
 		if resp.StatusCode != 200 {

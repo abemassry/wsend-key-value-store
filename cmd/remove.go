@@ -24,11 +24,11 @@ var removeCmd = &cobra.Command{
 
 Deletes a key and the value, as well as the backing file of the value.
 
-wkv remove --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar"
-   --store-link name of the key value store container
-	 --key name of the key inside key value store
-	 --uid is optionally passed in like in create
-`,
+wkv remove --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar" --uid="0123456789abcdef"
+
+	--store-link name of the key value store container
+	--key name of the key inside key value store
+	--uid is optionally passed in like in create`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if UID == "" {
 			UID = getUID()

@@ -39,16 +39,17 @@ A key is a string and value can be anything but defaults to a string and is
 stored as a URL
 
 wkv store --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar" --value="baz" --type="string"
-    --store-link name of the key value store container
-    --key name of the key inside key value store
-    --value either a string (default) or a file based on the --type
-      in either case a file is uploaded which allows the string data to be
-      incredbily long and is referenced by a URL pointing to the file.
-    --type string or file
-value is either a string (default) or a file specified by --type="file"
-if a file is specified the path is either absolute or the default is the
-current directory
-    --uid is optionally passed in like in create`,
+
+	--store-link name of the key value store container
+	--key name of the key inside key value store
+	--value either a string (default) or a file based on the --type
+		in either case a file is uploaded which allows the string data to be
+		incredbily long and is referenced by a URL pointing to the file.
+	--type string or file
+		value is either a string (default) or a file specified by --type="file"
+		if a file is specified the path is either absolute or the default is the
+		current directory
+	--uid is optionally passed in like in create`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if UID == "" {
 			UID = getUID()

@@ -30,19 +30,19 @@ var rootCmd = &cobra.Command{
 a value based on a key some examples include:
 
 wkv create --name="foo"
-To create a store
+	To create a store
 
 wkv store --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar" --value="baz" --type="string"
-this will store the value "bar" at the key "foo" and it's of type string
-which is the default if type was "file" then it would attempt to upload the
-file specified. In either case a file always gets uploaded because the string
-value can be very large and it makes more sense to be flexible.
+	this will store the value "bar" at the key "foo" and it's of type string
+	which is the default if type was "file" then it would attempt to upload the
+	file specified. In either case a file always gets uploaded because the string
+	value can be very large and it makes more sense to be flexible.
 
 wkv get --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar"
-will print the contents of the value to stdout
+	will print the contents of the value to stdout
 
 wkv remove --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar"
-to remove the key and associated value and file.
+	to remove the key and associated value and file.
 `,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
