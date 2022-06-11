@@ -8,8 +8,8 @@ A persistent, external, key-value store
 To build:
 `go build -o wkv main.go`
 
-For prebuilt binaries:
-Release
+For prebuilt binaries download at:
+[Releases](https://github.com/abemassry/wsend-key-value-store/releases)
 
 For command line shell usage drop `wkv` into `~/bin` and have `~/bin` in your `$PATH`
 
