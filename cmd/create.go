@@ -7,6 +7,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -61,9 +62,13 @@ incase wsend is installed
 			fmt.Println(fmt.Errorf(err.Error()))
 			os.Exit(1)
 		}
-		var bodyContent []byte
-		resp.Body.Read(bodyContent)
+		body, error := ioutil.ReadAll(resp.Body)
+		if error != nil {
+			fmt.Println(error)
+		}
 		resp.Body.Close()
+
+		fmt.Println(string(body))
 
 		os.Exit(0)
 

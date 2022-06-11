@@ -127,18 +127,12 @@ func DeleteFile(fileToRemove string) error {
 		"link": {fileToRemove},
 	}
 
-	resp, err := http.PostForm("https://wsend.net/delete_cli", data)
+	_, err := http.PostForm("https://wsend.net/delete_cli", data)
 
 	if err != nil {
 		fmt.Println(fmt.Errorf(err.Error()))
 		return err
 	}
-	var bodyContent []byte
-	fmt.Println(resp.StatusCode)
-	fmt.Println(resp.Header)
-	resp.Body.Read(bodyContent)
-	resp.Body.Close()
-	fmt.Println(bodyContent)
 
 	return nil
 }

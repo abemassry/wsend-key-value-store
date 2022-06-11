@@ -21,7 +21,7 @@ installed helps with grabbing the `uid`
 
 ## Usage
 
-### General Help
+### General
 ```
 ∮ ./wkv --help
 wsend key value store is command line tool to store

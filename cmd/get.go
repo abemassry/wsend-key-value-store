@@ -27,6 +27,7 @@ var getCmd = &cobra.Command{
 This command gets a value given a key and a store
 
 wkv get --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar"
+
 	--store-link name of the key value store container
 	--key name of the key inside key value store
 	--action optional
