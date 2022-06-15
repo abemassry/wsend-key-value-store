@@ -28,19 +28,22 @@ wsend key value store is command line tool to store
 a value based on a key some examples include:
 
 wkv create --name="foo"
-        To create a store
+  To create a store
 
-wkv store --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar" --value="baz" --type="string"
-        this will store the value "bar" at the key "foo" and it's of type string
-        which is the default if type was "file" then it would attempt to upload the
-        file specified. In either case a file always gets uploaded because the string
-        value can be very large and it makes more sense to be flexible.
+wkv store --store-link="https://wsnd.io/IdGzDoh/foo" \
+          --key="bar" \
+          --value="baz" \
+          --type="string"
+  this will store the value "bar" at the key "foo" and it's of type string
+  which is the default if type was "file" then it would attempt to upload the
+  file specified. In either case a file always gets uploaded because the string
+  value can be very large and it makes more sense to be flexible.
 
 wkv get --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar"
-        will print the contents of the value to stdout
+  will print the contents of the value to stdout
 
 wkv remove --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar"
-        to remove the key and associated value and file.
+  to remove the key and associated value and file.
 
 Usage:
   wkv [command]
@@ -90,18 +93,21 @@ Store a value based on a key.
 A key is a string and value can be anything but defaults to a string and is
 stored as a URL
 
-wkv store --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar" --value="baz" --type="string"
+wkv store --store-link="https://wsnd.io/IdGzDoh/foo" \
+          --key="bar" \
+          --value="baz" \
+          --type="string"
 
-        --store-link name of the key value store container
-        --key name of the key inside key value store
-        --value either a string (default) or a file based on the --type
-                in either case a file is uploaded which allows the string data to be
-                incredbily long and is referenced by a URL pointing to the file.
-        --type string or file
-                value is either a string (default) or a file specified by --type="file"
-                if a file is specified the path is either absolute or the default is the
-                current directory
-        --uid is optionally passed in like in create
+  --store-link name of the key value store container
+  --key name of the key inside key value store
+  --value either a string (default) or a file based on the --type
+      in either case a file is uploaded which allows the string data to be
+      incredbily long and is referenced by a URL pointing to the file.
+  --type string or file
+      value is either a string (default) or a file specified by --type="file"
+      if a file is specified the path is either absolute or the default is the
+      current directory
+  --uid is optionally passed in like in create
 
 Usage:
   wkv store [flags]
@@ -123,13 +129,13 @@ This command gets a value given a key and a store
 
 wkv get --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar"
 
-        --store-link name of the key value store container
-        --key name of the key inside key value store
-        --action optional
-                "print" prints the text content if this is a link, it prints the link
-                "download" downloads the file to the current directory
-                "dump" the default, dumps the contents of the linked file if the link is
-                a file
+  --store-link name of the key value store container
+  --key name of the key inside key value store
+  --action optional
+      "print" prints the text content if this is a link, it prints the link
+      "download" downloads the file to the current directory
+      "dump" the default, dumps the contents of the linked file if the link is
+      a file
 
 Usage:
   wkv get [flags]
@@ -148,11 +154,13 @@ Delete a key and value
 
 Deletes a key and the value, as well as the backing file of the value.
 
-wkv remove --store-link="https://wsnd.io/IdGzDoh/foo" --key="bar" --uid="0123456789abcdef"
+wkv remove --store-link="https://wsnd.io/IdGzDoh/foo" \
+           --key="bar" \
+           --uid="0123456789abcdef"
 
-        --store-link name of the key value store container
-        --key name of the key inside key value store
-        --uid is optionally passed in like in create
+  --store-link name of the key value store container
+  --key name of the key inside key value store
+  --uid is optionally passed in like in create
 
 Usage:
   wkv remove [flags]
