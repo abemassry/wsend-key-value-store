@@ -2,7 +2,17 @@
 *a key-value store for wsend*
 
 ## Overview
-A persistent, external, key-value store
+A persistent, external, key-value store.
+
+A simple tool to use any time you need data stored external to your app.
+
+If you need key value pairs stored as JSON, look no further.
+
+Keys and values are verfy fluid, while keys need to be strings, they can be namespaced to provide deep querying of keys based on function. Values can be strings (the default) or even binary. Since the values in the key value store are links they can point to any value that can be represented by a file.
+
+## Example
+
+
 
 ## Install
 To build:
